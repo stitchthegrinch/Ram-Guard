@@ -1,4 +1,4 @@
-
+﻿
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
@@ -166,7 +166,7 @@ $title.Font = New-Object System.Drawing.Font("Segoe UI Semibold",18)
 $form.Controls.Add($title)
 
 $credits = New-Object System.Windows.Forms.Label
-$credits.Text = "Credits: Stitch — @jhfo on Discord"
+$credits.Text = "Credits: Stitch - @jhfo on Discord"
 $credits.Location = New-Object System.Drawing.Point(23,50)
 $credits.AutoSize = $true
 $credits.ForeColor = [System.Drawing.Color]::Silver
@@ -273,7 +273,7 @@ function Update-MetersAndGuard {
         $free = [math]::Round($os.FreePhysicalMemory/1MB,1)
         $used = [math]::Round($total-$free,1)
         $pct = if ($total -gt 0) { [math]::Round(($used/$total)*100) } else { 0 }
-        $sysRam.Text = "System RAM: $used / $total GB ($pct%)"
+        $sysRam.Text = "System RAM: $used / $total GB ($($pct)%)"
     } catch {}
 
     $robloxMB = 0
@@ -453,7 +453,7 @@ Add-Button "Clear Main" 420 550 110 {
 } | Out-Null
 
 $info = New-Object System.Windows.Forms.Label
-$info.Text = "Auto-guard: ALT target 600 MB • trims at 700 MB • checks every 5s • resolved usernames stop log scanning"
+$info.Text = "Auto-guard: ALT target 600 MB - trims at 700 MB - checks every 5s - resolved usernames stop log scanning"
 $info.Location = New-Object System.Drawing.Point(20,595)
 $info.Size = New-Object System.Drawing.Size(920,25)
 $info.ForeColor = [System.Drawing.Color]::Silver
