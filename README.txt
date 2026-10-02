@@ -1,62 +1,58 @@
-ROBLOX RAM GUARD v7.9 - Many-Client Performance Update
+# RAM Guard 8.0
 
-INSTALL
-1. Close the old Guard window.
-2. Extract this ZIP into your existing Guard folder and replace the launcher.
-3. Keep your alts.json, main.json and settings.json files.
-4. Run Launch_Roblox_RAM_Guard.cmd. The window should show v7.9.
+A Windows desktop utility for monitoring Roblox clients and trimming saved alt accounts. Credits: Stitch / @jhfo.
 
-PERFORMANCE CHANGES
-- Log scanning and process monitoring run in one persistent background worker.
-- The Guard window appears before monitoring starts.
-- Only one monitor scan may run at a time; slow scans do not stack up.
-- A 60-second watchdog requests cancellation without waiting on the interface.
-  Another scan starts only after the previous worker invocation has finished.
-- The existing client list stays visible during a slow scan.
-- Identity scans run at most once every 10 seconds unless clients change or
-  Refresh is clicked. The normal RAM polling interval remains configurable.
-- Typical log sampling is reduced from up to 8 MB to 256 KB per changed log.
-  Unresolved identities still get the larger fallback read.
-- Each native thread timestamp is parsed once, using its latest log entry.
-- The system RAM meter uses the Windows memory API instead of a WMI query.
-- Process start-time fallback uses one bounded CIM query per scan.
-- Rows update in place, preserving selection and checkboxes.
+## Start here
 
-GUARD BEHAVIOR
-- Automatic RAM trims have a 30-second cooldown per client.
-- Frozen or unmeasured clients are not automatically trimmed.
-- Frozen-client closure requires at least three fresh observations and the
-  configured frozen duration. Newly started clients get a 60-second grace period.
-- Missing or delayed scans reset frozen tracking instead of counting as a freeze.
-- Automatic actions verify process ID and creation time before acting.
-- Main accounts are protected by the automatic guard and Kill All Frozen.
+1. Close the previous RAM Guard, extract the entire ZIP, then run `Launch_Roblox_RAM_Guard.cmd`.
+2. The **Alt Guard starts OFF**. Let your Roblox accounts load.
+3. Select your main, then **Account role > Mark as Main**. Mark the other accounts as Alts.
+4. Click **Trim All Alts** when they are ready. This works with the guard OFF.
+5. Turn **Alt Guard ON** if you want automatic trimming and the configured frozen-client handling.
 
-ACCOUNT DETECTION
-The working v7.8.2 thread-based account matching and background username lookup
-are retained. Double-click an account row for detection details.
-Double-click the bottom status text for monitor state and the latest monitor error.
+Turning ON enables currently recognized, saved alts. Any client that joins or restarts afterward begins paused; select it and click **Enable** when ready. **Pause** affects selected alts; **Pause all** affects every alt. OFF stops all automatic trims and automatic closures. Manual actions remain available.
 
-SCOPE
-This update reduces work and blocking inside the Guard. It cannot guarantee that
-Roblox clients stay connected when the PC runs out of resources or when a Roblox
-server or network connection times out.
+Only accounts marked Alt are managed. Main is excluded from trim, minimize, close, and automatic handling. RAM Guard does not change process priorities. Trimming releases working-set memory; memory can grow again as Roblox uses it.
 
-VALIDATION
-The supplied real Roblox log still yields UserId 4972142344 with the smaller
-sample. Latest per-thread timestamps match the previous algorithm. Timestamp
-parsing on that log drops from 2,592 entries to 19 distinct threads.
-A synthetic 50-client large-log read-budget check reduces sampled data from
-400 MiB to 12.5 MiB per identity scan for resolved logs. This is a byte-budget
-comparison, not a measured Windows speedup.
-Source/lexical checks and guard-policy reference models passed. Windows
-PowerShell, the WinForms UI, and live many-client load were unavailable here;
-the new background-worker integration requires testing on your PC.
+## Organized controls
 
-Defaults:
-Trim trigger: 700 MB
-Polling interval: 3 seconds
-Frozen duration: 30 seconds
-Automatic trim cooldown: 30 seconds
+- **Clients:** memory overview, account search, account list, selected-client controls, and a separate all-alt action row.
+- **Open Selected:** restores and brings the selected client window forward. Double-clicking a row does the same. Windows can occasionally refuse foreground focus; the status bar explains when this happens.
+- **Settings & Saves:** trim threshold, scan interval, trim cooldown, frozen-client handling, and backup/migration controls.
+- Ctrl/Shift selects multiple rows. Open Selected requires exactly one row.
 
-Credits: Stitch
-Discord: @jhfo
+## Keep saves across updates
+
+Account roles and settings are stored at:
+
+`%LOCALAPPDATA%\RobloxRAMGuard\profile.json`
+
+Future versions using this location load the same profile, even when extracted to another folder. ON/OFF and per-window readiness deliberately reset at startup so accounts can load first.
+
+### Moving from v7.x
+
+If the old `main.json`, `alts.json`, and `settings.json` are beside the new scripts on the first launch, they are imported automatically. Otherwise open **Settings & Saves > Import old folder** and select the folder containing those files. This imports RAM Guard settings and roles, not Roblox Account Manager login data or game progress.
+
+### Moving PCs or making backups
+
+Use **Export backup**, then **Import backup** on the other PC. Import previews the account count and requires confirmation. Import leaves automation OFF. Profiles contain account IDs/names and guard settings, not passwords or cookies.
+
+Saves are validated before replacement. An existing profile is retained as `profile.json.bak`; startup can recover from that backup if the primary is damaged. Existing profiles take precedence over files bundled with an update.
+
+## Changes in 8.0
+
+- Added Open Selected and double-click window activation with process/window ownership checks.
+- Added global OFF/ON, per-alt Pause/Enable, and all-alt controls. New client instances start paused.
+- Manual Trim All Alts works while OFF; Main stays protected.
+- Reorganized the UI into Clients and Settings & Saves with grouped actions.
+- Added stable save storage, legacy migration, export/import, validation, and backup recovery.
+- Fixed repeated worker initialization that could reset scan caches. Scanning remains asynchronous with no overlapping scans.
+- Slow scan gaps reset frozen-client evidence instead of counting as continuous frozen time.
+
+## Validation and requirements
+
+Windows with Windows PowerShell 5.1 and Windows Forms is required. Keep both `.ps1` files and the launcher together. Run only one RAM Guard version at a time.
+
+`tests/Validate.ps1` covers account protection, pause/readiness policy, manual/automatic trim behavior, cooldowns, PID reuse, log parsing, save migration/recovery, and repeated asynchronous scans with 50 simulated clients. All 38 checks passed under PowerShell 7.4.6 on Linux. Actual Windows UI rendering, native process calls, window focus, and performance with real Roblox clients still require on-PC validation.
+
+The launcher uses Windows PowerShell. Its `.cmd` wrapper may briefly show a command window.
