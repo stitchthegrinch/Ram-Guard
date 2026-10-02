@@ -1,105 +1,125 @@
-# Ram-Guard
-Here’s a clean README you can drop straight into GitHub:
-
 # Roblox RAM Guard
 
 A lightweight Windows utility for managing multiple Roblox instances and keeping RAM usage under control.
 
-Built for users who run several Roblox clients at once and want an easier way to monitor, trim, minimize, and manage them.
+Designed for users who run several Roblox clients at once and want an easier way to monitor, trim, minimize, and manage them.
+
+---
 
 ## Features
 
-- Shows RAM usage for each Roblox instance
-- Shows total Roblox RAM usage
-- Shows overall system RAM usage
-- Detects Roblox usernames and UserIds
-- Lets you mark accounts as saved **Alts**
-- Automatically recognizes saved alts
-- Automatically guards saved alts
-- Trim selected Roblox clients
-- Trim all saved alts
-- Kill selected Roblox clients
-- Detect frozen Roblox clients
-- Kill all frozen clients
-- Minimize all saved alt windows
-- Status colors:
-  - Green = Normal
-  - Yellow = High RAM
-  - Red = Frozen
-- Multi-select support
+- Per-instance Roblox RAM usage
+- Total Roblox RAM usage
+- System RAM meter
+- Roblox username and UserId detection
+- Save accounts as **Alts**
+- Automatically recognize saved alts
+- Automatically guard saved alts
+- Trim selected Roblox instances
+- **Trim All Alts**
+- Kill selected instances
+- Frozen-client detection
+- **Kill All Frozen**
+- **Minimize All Alts**
+- Multi-select controls
 - Dark UI
-- Saves alt data locally
+- Status colors:
+  - 🟢 Normal
+  - 🟡 High RAM
+  - 🔴 Frozen
+- Saves alt configuration locally
 
-## How To Use
+---
 
-1. Download the latest release.
-2. Extract the ZIP file.
-3. Run `Launch_Roblox_RAM_Guard.cmd`.
-4. Open your Roblox clients.
-5. Press **Refresh** if needed.
-6. Select the accounts you want to manage.
-7. Mark your alternate accounts using **Mark as Alt**.
-8. Saved alts will be remembered the next time the program is opened.
+## Installation
 
-## Main Controls
+1. Go to the **Releases** section.
+2. Download the latest ZIP.
+3. Extract the ZIP.
+4. Run:
 
-**Trim Selected**  
-Reduces memory usage for selected Roblox clients.
+```text
+Launch_Roblox_RAM_Guard.cmd
+```
 
-**Trim All Alts**  
-Trims every Roblox account saved as an alt.
+> Do not run the launcher directly from inside the ZIP.
 
-**Kill Selected**  
-Closes selected Roblox instances.
+---
 
-**Kill All Frozen**  
-Closes Roblox clients detected as frozen.
+## Usage
 
-**Minimize All Alts**  
-Minimizes all Roblox windows belonging to saved alt accounts.
+Open your Roblox clients, then launch Roblox RAM Guard.
 
-**Mark as Alt**  
-Saves the selected Roblox account as an alt.
+Select any Roblox instance to manage it.
 
-**Remove Alt**  
-Removes the selected account from the saved alt list.
+### Main Controls
+
+| Button | Description |
+|---|---|
+| **Trim Selected** | Trims selected Roblox instances |
+| **Trim All Alts** | Trims every saved alt |
+| **Kill Selected** | Closes selected Roblox instances |
+| **Kill All Frozen** | Closes clients detected as frozen |
+| **Minimize All Alts** | Minimizes all saved alt Roblox windows |
+| **Mark as Alt** | Saves the selected account as an alt |
+| **Remove Alt** | Removes the account from the saved alt list |
+| **Refresh** | Refreshes running Roblox instances |
+
+---
+
+## Alt System
+
+Accounts can be marked as **Alts** inside the program.
+
+Saved alts are stored locally and automatically recognized when they appear again.
+
+Once detected, saved alts can automatically be selected and monitored by RAM Guard.
+
+---
 
 ## Username Detection
 
-Roblox does not directly expose the account username through the Windows process.
+Roblox does not directly expose the username of each client through the Windows process.
 
-Roblox RAM Guard attempts to identify each client by matching the running Roblox process with its Player session logs.
+RAM Guard identifies clients by matching running Roblox processes with their Roblox Player session logs.
 
-Because of this, a client may temporarily display as `Unknown` shortly after launching.
+A newly opened client may temporarily show:
 
-The program automatically retries unresolved clients.
+```text
+Unknown
+```
 
-## Windows Warning
+The program will continue attempting to resolve the account automatically.
+
+---
+
+## Windows SmartScreen / Antivirus
 
 Roblox RAM Guard currently uses PowerShell and a CMD launcher.
 
-Because of this, Windows SmartScreen or antivirus software may sometimes display a warning.
+Because downloaded scripts can trigger Windows security warnings, Windows SmartScreen or antivirus software may warn before launching the program.
 
-The source code is available in this repository so users can inspect exactly what the program does.
+The source code is included in this repository so you can inspect what the program does.
 
-Always extract the ZIP before running the launcher.
+---
 
 ## Requirements
 
-- Windows 10 or Windows 11
+- Windows 10 / 11
 - PowerShell
 - Roblox Player
 
+---
+
 ## Disclaimer
 
-This project is not affiliated with, endorsed by, or associated with Roblox Corporation.
+Roblox RAM Guard is an independent project and is not affiliated with, endorsed by, or associated with Roblox Corporation.
 
-Use this software at your own risk.
+Use at your own risk.
+
+---
 
 ## Credits
 
-Created by **Stitch**
-
+**Stitch**  
 Discord: **@jhfo**
-
-I can also make you a more polished GitHub version with badges, screenshots section, releases section, and a cleaner project header if you want.
