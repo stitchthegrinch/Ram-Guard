@@ -1,66 +1,62 @@
-ROBLOX RAM GUARD v7.8.2 - Account Detection Fix
+ROBLOX RAM GUARD v7.9 - Many-Client Performance Update
 
 INSTALL
-1. Close the old RAM Guard window.
-2. Extract all files into your existing RAM Guard folder, replacing the old
-   script and README. Keep your alts.json, main.json and settings.json files.
-3. Run Launch_Roblox_RAM_Guard.cmd. The window should say v7.8.2.
-4. Leave Roblox open, join a game, and allow several seconds for detection.
-   Detection supports starting Guard before or after Roblox.
+1. Close the old Guard window.
+2. Extract this ZIP into your existing Guard folder and replace the launcher.
+3. Keep your alts.json, main.json and settings.json files.
+4. Run Launch_Roblox_RAM_Guard.cmd. The window should show v7.9.
 
-The script keeps the name Roblox_RAM_Guard_v7_8.ps1 so your existing launcher
-continues to work. Its contents and window version are v7.8.2.
+PERFORMANCE CHANGES
+- Log scanning and process monitoring run in one persistent background worker.
+- The Guard window appears before monitoring starts.
+- Only one monitor scan may run at a time; slow scans do not stack up.
+- A 60-second watchdog requests cancellation without waiting on the interface.
+  Another scan starts only after the previous worker invocation has finished.
+- The existing client list stays visible during a slow scan.
+- Identity scans run at most once every 10 seconds unless clients change or
+  Refresh is clicked. The normal RAM polling interval remains configurable.
+- Typical log sampling is reduced from up to 8 MB to 256 KB per changed log.
+  Unresolved identities still get the larger fallback read.
+- Each native thread timestamp is parsed once, using its latest log entry.
+- The system RAM meter uses the Windows memory API instead of a WMI query.
+- Process start-time fallback uses one bounded CIM query per scan.
+- Rows update in place, preserving selection and checkboxes.
 
-WHAT WAS WRONG
-- Finding a UserId without a username created a permanently cached Unknown.
-- No UserId-to-username lookup existed.
-- The UI only noticed a new cache entry, not an existing entry gaining a name.
-- Logs larger than 8 MB were read from the end, losing startup identity fields.
-- Log matching used last-write time, which changes while Roblox runs, and could
-  fall back to a different account's old log.
+GUARD BEHAVIOR
+- Automatic RAM trims have a 30-second cooldown per client.
+- Frozen or unmeasured clients are not automatically trimmed.
+- Frozen-client closure requires at least three fresh observations and the
+  configured frozen duration. Newly started clients get a 60-second grace period.
+- Missing or delayed scans reset frozen tracking instead of counting as a freeze.
+- Automatic actions verify process ID and creation time before acting.
+- Main accounts are protected by the automatic guard and Kill All Frozen.
 
-FIXES
-- Background batch lookup of public usernames from detected UserIds.
-- Incomplete identities are retried; failed network lookups retry after 60 seconds.
-- Username changes refresh the displayed account row.
-- Reads both startup and recent sections of large logs, sharing live log access.
-- Matches native thread IDs in logs to live Windows process threads first.
-  Requires two distinct matching IDs recorded after process creation.
-- Removes the strict 3-second logger-clock window from the primary match.
-- Uses CIM creation time if the direct process start-time query is denied.
-- If thread enumeration is unavailable, only accepts a single unambiguous
-  timing candidate. PID reuse is checked against process creation time.
-- Prioritizes local-account telemetry and handles escaped/encoded fields.
-- Does not treat arbitrary game-printed UserIds as the local account.
+ACCOUNT DETECTION
+The working v7.8.2 thread-based account matching and background username lookup
+are retained. Double-click an account row for detection details.
+Double-click the bottom status text for monitor state and the latest monitor error.
 
-IF AN ACCOUNT STILL SHOWS UNKNOWN
-Double-click its row to see detection details.
-- Waiting for username lookup: check internet access and wait up to 60 seconds.
-- Waiting for local account fields: join a game and give Roblox time to log them.
-- No matching live threads: check the details box for scanned-log and thread counts.
-- Thread enumeration unavailable: reopening clients separately can help timing fallback.
-Send a screenshot of that details box if detection still fails. A client whose
-logs omit local account identifiers cannot be identified by this log-based method.
-The script does not assume that the website's logged-in account owns all clients.
+SCOPE
+This update reduces work and blocking inside the Guard. It cannot guarantee that
+Roblox clients stay connected when the PC runs out of resources or when a Roblox
+server or network connection times out.
 
-NETWORK / VALIDATION
-Uses Roblox's public POST https://users.roblox.com/v1/users endpoint with detected
-numeric UserIds. No account cookies, passwords or launch tickets are read or sent.
-API reference: https://create.roblox.com/docs/cloud/reference/domains/users
+VALIDATION
+The supplied real Roblox log still yields UserId 4972142344 with the smaller
+sample. Latest per-thread timestamps match the previous algorithm. Timestamp
+parsing on that log drops from 2,592 entries to 19 distinct threads.
+A synthetic 50-client large-log read-budget check reduces sampled data from
+400 MiB to 12.5 MiB per identity scan for resolved logs. This is a byte-budget
+comparison, not a measured Windows speedup.
+Source/lexical checks and guard-policy reference models passed. Windows
+PowerShell, the WinForms UI, and live many-client load were unavailable here;
+the new background-worker integration requires testing on your PC.
 
-Validated extracted regexes against the actual supplied Roblox 0.741 log:
-local UserId 4972142344 and 19 distinct native thread IDs were parsed.
-Checked an ownership reference model for separate clients, tied ownership,
-recycled thread IDs and delayed logger startup. Checked full-file lexical
-delimiters. The earlier synthetic parser and large-log fixture checks passed.
-Windows PowerShell and live Roblox were unavailable in the repair environment;
-the Windows UI, API lookup and real-client matching still need an on-PC run.
-
-Defaults (unchanged):
-Target RAM: 600 MB
-Trim at: 700 MB
-Check every: 3 seconds
-Frozen kill: 30 seconds
+Defaults:
+Trim trigger: 700 MB
+Polling interval: 3 seconds
+Frozen duration: 30 seconds
+Automatic trim cooldown: 30 seconds
 
 Credits: Stitch
 Discord: @jhfo
