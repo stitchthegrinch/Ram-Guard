@@ -8,6 +8,17 @@ INSTALL
 4. Leave Roblox open, join a game, and allow several seconds for detection.
    Detection supports starting Guard before or after Roblox.
 
+The script keeps the name Roblox_RAM_Guard_v7_8.ps1 so your existing launcher
+continues to work. Its contents and window version are v7.8.2.
+
+WHAT WAS WRONG
+- Finding a UserId without a username created a permanently cached Unknown.
+- No UserId-to-username lookup existed.
+- The UI only noticed a new cache entry, not an existing entry gaining a name.
+- Logs larger than 8 MB were read from the end, losing startup identity fields.
+- Log matching used last-write time, which changes while Roblox runs, and could
+  fall back to a different account's old log.
+
 FIXES
 - Background batch lookup of public usernames from detected UserIds.
 - Incomplete identities are retried; failed network lookups retry after 60 seconds.
@@ -32,7 +43,18 @@ Send a screenshot of that details box if detection still fails. A client whose
 logs omit local account identifiers cannot be identified by this log-based method.
 The script does not assume that the website's logged-in account owns all clients.
 
-Send any errors off this to my discord.
+NETWORK / VALIDATION
+Uses Roblox's public POST https://users.roblox.com/v1/users endpoint with detected
+numeric UserIds. No account cookies, passwords or launch tickets are read or sent.
+API reference: https://create.roblox.com/docs/cloud/reference/domains/users
+
+Validated extracted regexes against the actual supplied Roblox 0.741 log:
+local UserId 4972142344 and 19 distinct native thread IDs were parsed.
+Checked an ownership reference model for separate clients, tied ownership,
+recycled thread IDs and delayed logger startup. Checked full-file lexical
+delimiters. The earlier synthetic parser and large-log fixture checks passed.
+Windows PowerShell and live Roblox were unavailable in the repair environment;
+the Windows UI, API lookup and real-client matching still need an on-PC run.
 
 Defaults (unchanged):
 Target RAM: 600 MB
