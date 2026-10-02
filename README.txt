@@ -1,4 +1,4 @@
-ROBLOX RAM GUARD V7.6
+ROBLOX RAM GUARD V7.6.1
 
 Changes:
 - Roblox instances now appear automatically when opened.
@@ -25,3 +25,6 @@ Launch_Roblox_RAM_Guard.cmd
 Credits:
 Stitch
 Discord: @jhfo
+
+Hotfix:
+- Fixed PowerShell reserved $PID variable conflict in closed-process cleanup.
